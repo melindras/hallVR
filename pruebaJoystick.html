@@ -124,8 +124,8 @@ window.addEventListener("pointermove", (e) => {
     dy = dy / distance * max;
   }
 
-  stick.style.left = `${dx + 30}px`;
-  stick.style.top = `${dy + 30}px`;
+  stick.style.left = `${dx - 30}px`;
+  stick.style.top = `${dy - 30}px`;
 
   moveX = dx / max;
   moveY = dy / max;
