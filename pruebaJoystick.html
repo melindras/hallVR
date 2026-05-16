@@ -124,8 +124,8 @@ window.addEventListener("pointermove", (e) => {
     dy = dy / distance * max;
   }
 
-  stick.style.left = `${dx - 30}px`;
-  stick.style.top = `${dy - 30}px`;
+  stick.style.left = `${dx + 30}px`;
+  stick.style.top = `${dy + 30}px`;
 
   moveX = dx / max;
   moveY = dy / max;
@@ -148,11 +148,11 @@ AFRAME.registerComponent("move-player", {
     right.crossVectors(direction, new THREE.Vector3(0,1,0));
 
     player.object3D.position.add(
-      direction.multiplyScalar(-moveY * 0.05)
+      direction.multiplyScalar(moveY * 0.05)
     );
 
     player.object3D.position.add(
-      right.multiplyScalar(moveX * 0.05)
+      right.multiplyScalar(-moveX * 0.05)
     );
   }
 });
