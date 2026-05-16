@@ -1,0 +1,31 @@
+ body {
+    margin: 0;
+    overflow: hidden;
+  }
+/* Zona joystick */
+  #joystick-container {
+    position: fixed;
+    bottom: 40px;
+    left: 40px;
+    width: 120px;
+    height: 120px;
+    z-index: 999;
+    touch-action: none;
+  }
+
+  #base {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+  }
+
+  #stick {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 50%;
+    left: 30px;
+    top: 30px;
