@@ -1,43 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>A-Frame Mobile Movement</title>
+<meta charset="UTF-8">
+<title>Aframe móvil</title>
 
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
-  <!-- Joystick -->
-  <script src="https://cdn.jsdelivr.net/npm/aframe-joystick-controls@1.0.1/dist/aframe-joystick-controls.min.js"></script>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+  }
+
+  /* Zona joystick */
+  #joystick-container {
+    position: fixed;
+    bottom: 40px;
+    left: 40px;
+    width: 120px;
+    height: 120px;
+    z-index: 999;
+    touch-action: none;
+  }
+
+  #base {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+  }
+
+  #stick {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 50%;
+    left: 30px;
+    top: 30px;
+  }
+</style>
 </head>
 
 <body>
-  <a-scene>
 
-    <!-- Player -->
-    <a-entity
-      id="player"
-      position="0 1.6 0"
-      joystick-controls="maxSpeed: 0.1"
-    >
+<div id="joystick-container">
+  <div id="base"></div>
+  <div id="stick"></div>
+</div>
 
-      <!-- Cámara -->
-      <a-camera
-        look-controls="magicWindowTrackingEnabled: true">
-      </a-camera>
+<a-scene>
 
-    </a-entity>
+  <!-- PLAYER -->
+  <a-entity id="player" position="0 1.6 5">
 
-    <!-- Suelo -->
-    <a-plane
-      rotation="-90 0 0"
-      width="100"
-      height="100"
-      color="#7BC8A4">
-    </a-plane>
+    <a-camera
+      look-controls="magicWindowTrackingEnabled: true">
+    </a-camera>
 
-    <!-- Caja -->
-    <a-box position="0 1 -5" color="red"></a-box>
+  </a-entity>
 
-  </a-scene>
+  <!-- Suelo -->
+  <a-plane
+    rotation="-90 0 0"
+    width="100"
+    height="100"
+    color="#7BC8A4">
+  </a-plane>
+
+  <!-- Objetos -->
+  <a-box position="0 1 -5" color="red"></a-box>
+  <a-box position="3 1 -8" color="blue"></a-box>
+
+</a-scene>
+
+<script>
+const stick = document.getElementById("stick");
+const container = document.getElementById("joystick-container");
+const player = document.getElementById("player");
+
+let active = false;
+let moveX = 0;
+let moveY = 0;
+
+const center = {
+  x: 60,
+  y: 60
+};
+
+container.addEventListener("pointerdown", () => {
+  active = true;
+});
+
+window.addEventListener("pointerup", () => {
+  active = false;
+
+  stick.style.left = "30px";
+  stick.style.top = "30px";
+
+  moveX = 0;
+  moveY = 0;
+});
+
+window.addEventListener("pointermove", (e) => {
+
+  if (!active) return;
+
+  const rect = container.getBoundingClientRect();
+
+  let x = e.clientX - rect.left;
+  let y = e.clientY - rect.top;
+
+  let dx = x - center.x;
+  let dy = y - center.y;
+
+  const max = 40;
+
+  const distance = Math.sqrt(dx*dx + dy*dy);
+
+  if (distance > max) {
+    dx = dx / distance * max;
+    dy = dy / distance * max;
+  }
+
+  stick.style.left = `${dx + 30}px`;
+  stick.style.top = `${dy + 30}px`;
+
+  moveX = dx / max;
+  moveY = dy / max;
+});
+
+AFRAME.registerComponent("move-player", {
+
+  tick: function () {
+
+    if (moveX === 0 && moveY === 0) return;
+
+    const direction = new THREE.Vector3();
+
+    player.object3D.getWorldDirection(direction);
+
+    direction.y = 0;
+    direction.normalize();
+
+    const right = new THREE.Vector3();
+    right.crossVectors(direction, new THREE.Vector3(0,1,0));
+
+    player.object3D.position.add(
+      direction.multiplyScalar(-moveY * 0.05)
+    );
+
+    player.object3D.position.add(
+      right.multiplyScalar(moveX * 0.05)
+    );
+  }
+});
+
+player.setAttribute("move-player", "");
+
+</script>
+
 </body>
 </html>
